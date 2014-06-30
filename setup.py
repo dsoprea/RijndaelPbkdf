@@ -6,13 +6,13 @@ import pprp
 app_path = os.path.dirname(pprp.__file__)
 
 with open(os.path.join(app_path, 'resources', 'README.rst')) as f:
-      long_description = map(lambda s: s.strip(), f)
+      long_description = ''.join(f)
 
 with open(os.path.join(app_path, 'resources', 'requirements.txt')) as f:
-      install_requires = map(lambda s: s.strip(), f)
+      install_requires = list(map(lambda s: s.strip(), f))
 
-description = "A pure-Python Rijndael and PBKDF2 library. Python2.7- and "\
-              "Python3-compatible."
+description = "A pure-Python Rijndael (AES) and PBKDF2 library. Python2.7- "\
+              "and Python3-compatible."
 
 setuptools.setup(
       name='pprp',
@@ -23,7 +23,7 @@ setuptools.setup(
       keywords='rijdael pbkdf2',
       author='Dustin Oprea',
       author_email='myselfasunder@gmail.com',
-      url='https://github.com/dsoprea/RestPipe',
+      url='https://github.com/dsoprea/RijndaelPbkdf',
       license='GPL 2',
       packages=setuptools.find_packages(exclude=[]),
       include_package_data=True,
