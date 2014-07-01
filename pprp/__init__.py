@@ -1,4 +1,4 @@
-__version__ = '0.2.1'
+__version__ = '0.2.2'
 
 import sys
 
@@ -29,3 +29,9 @@ from pprp.utility import \
 from pprp.source import \
     file_source_gen, \
     data_source_gen
+
+from pprp.sink import \
+    decrypt_sink, \
+    encrypt_sink, \
+    decrypt_to_file_sink, \
+    encrypt_to_file_sink

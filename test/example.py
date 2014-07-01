@@ -45,20 +45,21 @@ sg = pprp.data_source_gen(data)
 # Feed the source into the encryptor.
 eg = pprp.rjindael_encrypt_gen(key, sg)
 
+#encrypted = pprp.encrypt_sink(eg)
+
+#with open('/tmp/encrypt.sink', 'wb') as f:
+#    pprp.encrypt_to_file_sink(f, eg)
+
 # Feed the encryptor into the decryptor.
 dg = pprp.rjindael_decrypt_gen(key, eg)
 
-# Run, and sink the output into an IO stream. Trim the padding off the last 
-# block.
+# Sink the output into an IO-stream.
+decrypted = pprp.decrypt_sink(dg)
 
-s = io.BytesIO()
-ends_at = 0
-for block in dg:
-    ends_at += pprp.config.DEFAULT_BLOCK_SIZE
-    if ends_at >= len(data):
-        block = pprp.trim_pkcs7_padding(block)
+#with open('/tmp/decrypt.sink', 'wb') as f:
+#    pprp.decrypt_to_file_sink(f, dg)
+#
+#with open('/tmp/decrypt.sink', 'rb') as f:
+#    decrypted = f.read()
 
-    s.write(block)
-
-decrypted = s.getvalue()
 assert data == decrypted.decode('ASCII')

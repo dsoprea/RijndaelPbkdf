@@ -73,18 +73,12 @@ Feed the encryptor into the decryptor::
 
     dg = pprp.rjindael_decrypt_gen(key, eg)
 
-Sink the output into an IO stream, and trim the padding off the last block::
+Sink the output to a variable (and automatically trim the padding)::
 
-    s = io.BytesIO()
-    ends_at = 0
-    for block in dg:
-        ends_at += pprp.config.DEFAULT_BLOCK_SIZE
-        if ends_at >= len(data):
-            block = pprp.trim_pkcs7_padding(block)
+    decrypted = pprp.decrypt_sink(dg)
 
-        s.write(block)
-
-    decrypted = s.getvalue()
+There is also a *decrypt_to_file_sink* sink that takes a file-object as the 
+first argument.
 
 Check the result::
 
