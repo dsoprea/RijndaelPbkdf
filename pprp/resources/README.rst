@@ -108,5 +108,6 @@ decryption::
 Notes
 -----
 
-A different block-size may be passed to each of the generators. The default 
-block-size can be changed via the PPRP_BLOCK_SIZE environment variable.
+The generators can take a block-size in the event that you don't want the 
+default. The default block-size can also be changed via the PPRP_BLOCK_SIZE 
+environment variable.
