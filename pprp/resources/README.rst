@@ -7,13 +7,16 @@ Rijndael (AES) implementations, and that nothing available, in general, was
 compatible with both Python2 *and* Python3. The same is true of the PBKDF2 
 key-expansion algorithm.
 
-The encryptor expects a source generator (which yields individual blocks). The 
-encryptor and decryptor functions are written as generators. Decrypted data has 
-PKCS7 padding. A utility function is provided to trim this 
-(*trim_pkcs7_padding*).
+The encryptor takes a source generator (which yields individual blocks). There 
+are source-generators provided for both data from a variable and data from a 
+file. It is trivial if you'd like to write your own. The encryptor and 
+decryptor functions are written as generators. Decrypted data has PKCS7
+padding. A utility function is provided to trim this (*trim_pkcs7_padding*).
 
 The implementation includes Python2 and Python3 implementations of both 
 Rijndael and PBKDF2, and chooses the version when loaded.
+
+The default block-size is 128-bits in order to be compatible with AES.
 
 This project is also referred to as *pprp*, which stands for "Pure Python 
 Rijndael and PBKDF2".
@@ -42,6 +45,7 @@ Top imports and defines::
     import hashlib
 
     import pprp
+    import pprp.config
 
     # Make the strings the right type for the current Python version.
     def trans(text):
@@ -49,7 +53,6 @@ Top imports and defines::
 
     passphrase = trans('password')
     salt = trans('salt')
-    block_size = 16
     key_size = 32
     data = "this is a test" * 100
 
@@ -59,22 +62,22 @@ Do the key-expansion::
 
 Create a source from available data::
 
-    sg = pprp.data_source_gen(data, block_size)
+    sg = pprp.data_source_gen(data)
 
 Feed the source into the encryptor::
 
-    eg = pprp.rjindael_encrypt_gen(key, sg, block_size)
+    eg = pprp.rjindael_encrypt_gen(key, sg)
 
 Feed the encryptor into the decryptor::
 
-    dg = pprp.rjindael_decrypt_gen(key, eg, block_size)
+    dg = pprp.rjindael_decrypt_gen(key, eg)
 
 Sink the output into an IO stream, and trim the padding off the last block::
 
     s = io.BytesIO()
     ends_at = 0
     for block in dg:
-        ends_at += block_size
+        ends_at += pprp.config.DEFAULT_BLOCK_SIZE
         if ends_at >= len(data):
             block = pprp.trim_pkcs7_padding(block)
 
@@ -85,3 +88,29 @@ Sink the output into an IO stream, and trim the padding off the last block::
 Check the result::
 
     assert data == decrypted.decode('ASCII')
+
+The following is a portion of the output of the example script 
+(test/example.py). Notice that, due to this being an efficient, generator-based 
+design, the encryption of each block is followed by a decryption::
+
+    2014-07-01 12:24:13,182 - pprp.source - DEBUG - Yielding [data] source block: (0)-(0)
+    2014-07-01 12:24:13,182 - pprp.adapters - DEBUG - Encrypting and yielding encrypted block: (0)
+    2014-07-01 12:24:13,183 - pprp.adapters - DEBUG - Decrypting and yielding decrpted block: (0)
+    2014-07-01 12:24:13,183 - pprp.source - DEBUG - Yielding [data] source block: (1)-(16)
+    2014-07-01 12:24:13,183 - pprp.adapters - DEBUG - Encrypting and yielding encrypted block: (1)
+    2014-07-01 12:24:13,183 - pprp.adapters - DEBUG - Decrypting and yielding decrpted block: (1)
+    2014-07-01 12:24:13,183 - pprp.source - DEBUG - Yielding [data] source block: (2)-(32)
+    2014-07-01 12:24:13,183 - pprp.adapters - DEBUG - Encrypting and yielding encrypted block: (2)
+    2014-07-01 12:24:13,183 - pprp.adapters - DEBUG - Decrypting and yielding decrpted block: (2)
+    2014-07-01 12:24:13,184 - pprp.source - DEBUG - Yielding [data] source block: (3)-(48)
+    2014-07-01 12:24:13,184 - pprp.adapters - DEBUG - Encrypting and yielding encrypted block: (3)
+    2014-07-01 12:24:13,184 - pprp.adapters - DEBUG - Decrypting and yielding decrpted block: (3)
+    ...
+
+
+-----
+Notes
+-----
+
+A different block-size may be passed in to each of the generators. The default 
+block-size can also be passed via environment variable as PPRP_BLOCK_SIZE.

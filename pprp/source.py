@@ -1,8 +1,10 @@
 import logging
 
+import pprp.config
+
 _logger = logging.getLogger(__name__)
 
-def file_source_gen(filepath, block_size):
+def file_source_gen(filepath, block_size=pprp.config.DEFAULT_BLOCK_SIZE):
     with open(filepath, 'rb') as f:
         i = 0
         while 1:
@@ -16,7 +18,7 @@ def file_source_gen(filepath, block_size):
             i += 1
             offset += len(block)
 
-def data_source_gen(data, block_size):
+def data_source_gen(data, block_size=pprp.config.DEFAULT_BLOCK_SIZE):
     i = 0
     for offset in range(0, len(data), block_size):
         block = data[offset:offset + block_size]

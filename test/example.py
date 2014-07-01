@@ -11,6 +11,7 @@ import os.path
 import hashlib
 
 import pprp
+import pprp.config
 
 def _configure_logging():
     import logging
@@ -33,20 +34,19 @@ def trans(text):
 
 passphrase = trans('password')
 salt = trans('salt')
-block_size = 16
 key_size = 32
 data = "this is a test" * 100
 
 key = pprp.pbkdf2(passphrase, salt, key_size)
 
 # Create a source from available data.
-sg = pprp.data_source_gen(data, block_size)
+sg = pprp.data_source_gen(data)
 
 # Feed the source into the encryptor.
-eg = pprp.rjindael_encrypt_gen(key, sg, block_size)
+eg = pprp.rjindael_encrypt_gen(key, sg)
 
 # Feed the encryptor into the decryptor.
-dg = pprp.rjindael_decrypt_gen(key, eg, block_size)
+dg = pprp.rjindael_decrypt_gen(key, eg)
 
 # Run, and sink the output into an IO stream. Trim the padding off the last 
 # block.
@@ -54,7 +54,7 @@ dg = pprp.rjindael_decrypt_gen(key, eg, block_size)
 s = io.BytesIO()
 ends_at = 0
 for block in dg:
-    ends_at += block_size
+    ends_at += pprp.config.DEFAULT_BLOCK_SIZE
     if ends_at >= len(data):
         block = pprp.trim_pkcs7_padding(block)
 
