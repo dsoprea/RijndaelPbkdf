@@ -31,6 +31,6 @@ def rjindael_decrypt_gen(key, s, block_size=pprp.config.DEFAULT_BLOCK_SIZE):
 
     i = 0
     for block in s:
-        _logger.debug("Decrypting and yielding decrpted block: (%d)", i)
+        _logger.debug("Decrypting and yielding decrypted block: (%d)", i)
         yield r.decrypt(block)
         i += 1

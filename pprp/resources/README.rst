@@ -40,6 +40,7 @@ both Python 2 and 3.
 
 Top imports and defines::
 
+    import sys
     import io
     import os.path
     import hashlib
@@ -90,21 +91,22 @@ Check the result::
     assert data == decrypted.decode('ASCII')
 
 The following is a portion of the output of the example script 
-(test/example.py). Notice that, due to this being an efficient, generator-based 
-design, the encryption of each block is followed by a decryption::
+(*test/example.py*). Notice that, due to this being an efficient, 
+generator-based design, the encryption of each block is followed by a 
+decryption::
 
     2014-07-01 12:24:13,182 - pprp.source - DEBUG - Yielding [data] source block: (0)-(0)
     2014-07-01 12:24:13,182 - pprp.adapters - DEBUG - Encrypting and yielding encrypted block: (0)
-    2014-07-01 12:24:13,183 - pprp.adapters - DEBUG - Decrypting and yielding decrpted block: (0)
+    2014-07-01 12:24:13,183 - pprp.adapters - DEBUG - Decrypting and yielding decrypted block: (0)
     2014-07-01 12:24:13,183 - pprp.source - DEBUG - Yielding [data] source block: (1)-(16)
     2014-07-01 12:24:13,183 - pprp.adapters - DEBUG - Encrypting and yielding encrypted block: (1)
-    2014-07-01 12:24:13,183 - pprp.adapters - DEBUG - Decrypting and yielding decrpted block: (1)
+    2014-07-01 12:24:13,183 - pprp.adapters - DEBUG - Decrypting and yielding decrypted block: (1)
     2014-07-01 12:24:13,183 - pprp.source - DEBUG - Yielding [data] source block: (2)-(32)
     2014-07-01 12:24:13,183 - pprp.adapters - DEBUG - Encrypting and yielding encrypted block: (2)
-    2014-07-01 12:24:13,183 - pprp.adapters - DEBUG - Decrypting and yielding decrpted block: (2)
+    2014-07-01 12:24:13,183 - pprp.adapters - DEBUG - Decrypting and yielding decrypted block: (2)
     2014-07-01 12:24:13,184 - pprp.source - DEBUG - Yielding [data] source block: (3)-(48)
     2014-07-01 12:24:13,184 - pprp.adapters - DEBUG - Encrypting and yielding encrypted block: (3)
-    2014-07-01 12:24:13,184 - pprp.adapters - DEBUG - Decrypting and yielding decrpted block: (3)
+    2014-07-01 12:24:13,184 - pprp.adapters - DEBUG - Decrypting and yielding decrypted block: (3)
     ...
 
 
@@ -112,5 +114,5 @@ design, the encryption of each block is followed by a decryption::
 Notes
 -----
 
-A different block-size may be passed in to each of the generators. The default 
-block-size can also be passed via environment variable as PPRP_BLOCK_SIZE.
+A different block-size may be passed to each of the generators. The default 
+block-size can be changed via the PPRP_BLOCK_SIZE environment variable.
