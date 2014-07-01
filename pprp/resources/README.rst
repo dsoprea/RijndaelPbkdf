@@ -7,8 +7,8 @@ Rijndael (AES) implementations, and that nothing available, in general, was
 compatible with both Python2 *and* Python3. The same is true of the PBKDF2 
 key-expansion algorithm.
 
-The encrypter expects a source generator (which yields individual blocks). The 
-encrypter and decrypter functions are written as generators. Decrypted data has 
+The encryptor expects a source generator (which yields individual blocks). The 
+encryptor and decryptor functions are written as generators. Decrypted data has 
 PKCS7 padding. A utility function is provided to trim this 
 (*trim_pkcs7_padding*).
 
@@ -57,29 +57,23 @@ Do the key-expansion::
 
     key = pprp.pbkdf2(passphrase, salt, key_size)
 
-Define the source generator (we'll give this to the encrypter)::
+Create a source from available data::
 
-    def source_gen():
-        for i in range(0, len(data), block_size):
-            block = data[i:i + block_size]
-            len_ = len(block)
+    sg = pprp.data_source_gen(data, block_size)
 
-            if len_ > 0:
-                yield block.encode('ASCII')
+Feed the source into the encryptor::
 
-            if len_ < block_size:
-                break
+    eg = pprp.rjindael_encrypt_gen(key, sg, block_size)
 
-Connect the encryptor to the decryptor::
+Feed the encryptor into the decryptor::
 
-    encrypted_gen = pprp.rjindael_encrypt_gen(key, source_gen(), block_size)
+    dg = pprp.rjindael_decrypt_gen(key, eg, block_size)
 
-Run, sink the output into an IO stream, and trim the padding off the last 
-block::
+Sink the output into an IO stream, and trim the padding off the last block::
 
     s = io.BytesIO()
     ends_at = 0
-    for block in pprp.rjindael_decrypt_gen(key, encrypted_gen, block_size):
+    for block in dg:
         ends_at += block_size
         if ends_at >= len(data):
             block = pprp.trim_pkcs7_padding(block)

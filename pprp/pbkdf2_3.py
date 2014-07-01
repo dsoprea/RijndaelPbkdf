@@ -20,7 +20,7 @@ import os
 import struct
 
 
-def _pbkdf2(digestmod, password: 'bytes', salt, count, dk_length) -> 'bytes':
+def _pbkdf2(digestmod, password, salt, count, dk_length):
     '''
     PBKDF2, from PKCS #5 v2.0:
         http://tools.ietf.org/html/rfc2898
