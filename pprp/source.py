@@ -24,5 +24,5 @@ def data_source_gen(data, block_size=pprp.config.DEFAULT_BLOCK_SIZE):
         block = data[offset:offset + block_size]
 
         _logger.debug("Yielding [data] source block: (%d)-(%d)", i, offset)
-        yield block.encode('ASCII')
+        yield block
         i += 1

@@ -55,7 +55,7 @@ Top imports and defines::
     passphrase = trans('password')
     salt = trans('salt')
     key_size = 32
-    data = "this is a test" * 100
+    data = ("this is a test" * 100).encode('ASCII')
 
 Do the key-expansion::
 
@@ -82,7 +82,7 @@ first argument.
 
 Check the result::
 
-    assert data == decrypted.decode('ASCII')
+    assert data == decrypted
 
 The following is a portion of the output of the example script 
 (*test/example.py*). Notice that, due to this being an efficient, 

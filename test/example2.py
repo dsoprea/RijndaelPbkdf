@@ -1,6 +1,6 @@
 #!/usr/bin/env python3.3
 
-"""Example of how to feed the encryptor into the decryptor."""
+"""Example of how to completely encrypt and then completely decrypt."""
 
 import sys
 
@@ -41,16 +41,16 @@ data = ("this is a test" * 100).encode('ASCII')
 
 key = pprp.pbkdf2(passphrase, salt, key_size)
 
-# Create a source from available data.
+# Encrypt.
+
 sg = pprp.data_source_gen(data)
-
-# Feed the source into the encryptor.
 eg = pprp.rjindael_encrypt_gen(key, sg)
+encrypted = pprp.encrypt_sink(eg)
 
-# Feed the encryptor into the decryptor.
-dg = pprp.rjindael_decrypt_gen(key, eg)
+# Decrypt.
 
-# Sink the output into an IO-stream.
+sg = pprp.data_source_gen(encrypted)
+dg = pprp.rjindael_decrypt_gen(key, sg)
 decrypted = pprp.decrypt_sink(dg)
 
 assert data == decrypted
