@@ -296,5 +296,5 @@ def _makesalt():
 
 # vim:set ts=4 sw=4 sts=4 expandtab:
 
-def pbkdf2(passphrase, salt, key_length, iterations=1000):
+def pbkdf2(passphrase, salt, key_length, iterations=2000):
     return PBKDF2(passphrase, salt, iterations=iterations).read(key_length)
