@@ -3,7 +3,7 @@ import io
 import pprp
 import pprp.config
 
-def decrypt_sink(dg, block_size=pprp.config.DEFAULT_BLOCK_SIZE):
+def decrypt_sink(dg, block_size=pprp.config.DEFAULT_BLOCK_SIZE_B):
     s = io.BytesIO()
     last_block = None
     for block in dg:
@@ -24,7 +24,7 @@ def encrypt_sink(eg):
 
     return s.getvalue()
 
-def decrypt_to_file_sink(f, dg, block_size=pprp.config.DEFAULT_BLOCK_SIZE):
+def decrypt_to_file_sink(f, dg, block_size=pprp.config.DEFAULT_BLOCK_SIZE_B):
     last_block = None
     for block in dg:
         (block_to_send, last_block) = (last_block, block)
