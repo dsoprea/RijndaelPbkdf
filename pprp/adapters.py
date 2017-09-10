@@ -19,14 +19,15 @@ def rjindael_encrypt_gen(key, s, block_size=pprp.config.DEFAULT_BLOCK_SIZE_B):
             block += (chr(padding_size) * padding_size).encode('ASCII')
             padded = True
 
-        _logger.debug("Encrypting and yielding encrypted block: (%d) (%d)", 
+        _logger.debug("Encrypting and yielding encrypted block: (%d) (%d)",
                       i, len_)
 
         yield r.encrypt(block)
         i += 1
 
     if padded is False:
-        yield r.encrypt(chr(block_size) * block_size)
+        block = (chr(block_size) * block_size).encode('ASCII')
+        yield r.encrypt(block)
 
 def rjindael_decrypt_gen(key, s, block_size=pprp.config.DEFAULT_BLOCK_SIZE_B):
     r = rijndael_cls(key, block_size=block_size)
