@@ -1,66 +1,18 @@
-# Authors:
-#   Bram Cohen - main author
-#   Trevor Perrin - minor changes for Python compatibility
-#
-# See the LICENSE file for legal information regarding use of this file.
-# Also see Bram Cohen's statement below
-
-################ RIJNDAEL ###
-# Trevor edited below code for python 3, and ease of packaging
-
-"""
-A pure python (slow) implementation of rijndael with a decent interface
-
-To include -
-
-from rijndael import rijndael
-
-To do a key setup -
-
-r = rijndael(key, block_size = 16)
-
-key must be a string of length 16, 24, or 32
-blocksize must be 16, 24, or 32. Default is 16
-
-To use -
-
-ciphertext = r.encrypt(plaintext)
-plaintext = r.decrypt(ciphertext)
-
-If any strings are of the wrong length a ValueError is thrown
-"""
-
-# ported from the Java reference code by Bram Cohen, bram@gawth.com, April 2001
-# this code is public domain, unless someone makes
-# an intellectual property claim against the reference
-# code, in which case it can be made public domain by
-# deleting all the comments and renaming all the variables
-
 import copy
 
+def get_byte(byte):
+    # Python < 3.
+    if byte.__class__ != int:
+        byte = ord(byte)
 
-
-#TREV 2011 - is this still needed? seems not
-#-----------------------
-#TREV - ADDED BECAUSE THERE'S WARNINGS ABOUT INT OVERFLOW BEHAVIOR CHANGING IN
-#2.4.....
-#import os
-#if os.name != "java":
-#    import exceptions
-#    if hasattr(exceptions, "FutureWarning"):
-#        import warnings
-#        warnings.filterwarnings("ignore", category=FutureWarning, append=1)
-#-----------------------
-
-
+    return byte
 
 shifts = [[[0, 0], [1, 3], [2, 2], [3, 1]],
           [[0, 0], [1, 5], [2, 4], [3, 3]],
           [[0, 0], [1, 7], [3, 5], [4, 4]]]
 
 # [keysize][block_size]
-num_rounds = {16: {16: 10, 24: 12, 32: 14}, 
-24: {16: 12, 24: 12, 32: 14}, 32: {16: 14, 24: 14, 32: 14}}
+num_rounds = {16: {16: 10, 24: 12, 32: 14}, 24: {16: 12, 24: 12, 32: 14}, 32: {16: 14, 24: 14, 32: 14}}
 
 A = [[1, 1, 1, 1, 1, 0, 0, 0],
      [0, 1, 1, 1, 1, 1, 0, 0],
@@ -241,8 +193,8 @@ class rijndael:
         # copy user material bytes into temporary ints
         tk = []
         for i in range(0, KC):
-            tk.append((key[i * 4] << 24) | (key[i * 4 + 1] << 16) |
-                (key[i * 4 + 2]) << 8 | key[i * 4 + 3])
+            tk.append((get_byte(key[i * 4]) << 24) | (get_byte(key[i * 4 + 1]) << 16) |
+                (get_byte(key[i * 4 + 2]) << 8) | get_byte(key[i * 4 + 3]))
 
         # copy values into round key arrays
         t = 0
@@ -271,9 +223,9 @@ class rijndael:
                     tk[i] ^= tk[i-1]
                 tt = tk[KC // 2 - 1]
                 tk[KC // 2] ^= (S[ tt        & 0xFF] & 0xFF)       ^ \
-                              (S[(tt >>  8) & 0xFF] & 0xFF) <<  8 ^ \
-                              (S[(tt >> 16) & 0xFF] & 0xFF) << 16 ^ \
-                              (S[(tt >> 24) & 0xFF] & 0xFF) << 24
+                               (S[(tt >>  8) & 0xFF] & 0xFF) <<  8 ^ \
+                               (S[(tt >> 16) & 0xFF] & 0xFF) << 16 ^ \
+                               (S[(tt >> 24) & 0xFF] & 0xFF) << 24
                 for i in range(KC // 2 + 1, KC):
                     tk[i] ^= tk[i-1]
             # copy values into round key arrays
@@ -296,8 +248,7 @@ class rijndael:
 
     def encrypt(self, plaintext):
         if len(plaintext) != self.block_size:
-            raise ValueError('wrong block length, expected ' + 
-                str(self.block_size) + ' got ' + str(len(plaintext)))
+            raise ValueError('wrong block length, expected ' + str(self.block_size) + ' got ' + str(len(plaintext)))
         Ke = self.Ke
 
         BC = self.block_size // 4
@@ -316,10 +267,10 @@ class rijndael:
         t = []
         # plaintext to ints + key
         for i in range(BC):
-            t.append((plaintext[i * 4    ] << 24 |
-                      plaintext[i * 4 + 1] << 16 |
-                      plaintext[i * 4 + 2] <<  8 |
-                      plaintext[i * 4 + 3]        ) ^ Ke[0][i])
+            t.append((get_byte(plaintext[i * 4    ]) << 24 |
+                      get_byte(plaintext[i * 4 + 1]) << 16 |
+                      get_byte(plaintext[i * 4 + 2]) <<  8 |
+                      get_byte(plaintext[i * 4 + 3])        ) ^ Ke[0][i])
         # apply round transforms
         for r in range(1, ROUNDS):
             for i in range(BC):
@@ -336,12 +287,11 @@ class rijndael:
             result.append((S[(t[(i + s1) % BC] >> 16) & 0xFF] ^ (tt >> 16)) & 0xFF)
             result.append((S[(t[(i + s2) % BC] >>  8) & 0xFF] ^ (tt >>  8)) & 0xFF)
             result.append((S[ t[(i + s3) % BC]        & 0xFF] ^  tt       ) & 0xFF)
-        return bytearray(result)
+        return ''.join(map(chr, result))
 
     def decrypt(self, ciphertext):
         if len(ciphertext) != self.block_size:
-            raise ValueError('wrong block length, expected ' + 
-                str(self.block_size) + ' got ' + str(len(ciphertext)))
+            raise ValueError('wrong block length, expected ' + str(self.block_size) + ' got ' + str(len(ciphertext)))
         Kd = self.Kd
 
         BC = self.block_size // 4
@@ -360,10 +310,10 @@ class rijndael:
         t = [0] * BC
         # ciphertext to ints + key
         for i in range(BC):
-            t[i] = (ciphertext[i * 4    ] << 24 |
-                    ciphertext[i * 4 + 1] << 16 |
-                    ciphertext[i * 4 + 2] <<  8 |
-                    ciphertext[i * 4 + 3]        ) ^ Kd[0][i]
+            t[i] = (get_byte(ciphertext[i * 4    ]) << 24 |
+                    get_byte(ciphertext[i * 4 + 1]) << 16 |
+                    get_byte(ciphertext[i * 4 + 2]) <<  8 |
+                    get_byte(ciphertext[i * 4 + 3])        ) ^ Kd[0][i]
         # apply round transforms
         for r in range(1, ROUNDS):
             for i in range(BC):
@@ -380,10 +330,25 @@ class rijndael:
             result.append((Si[(t[(i + s1) % BC] >> 16) & 0xFF] ^ (tt >> 16)) & 0xFF)
             result.append((Si[(t[(i + s2) % BC] >>  8) & 0xFF] ^ (tt >>  8)) & 0xFF)
             result.append((Si[ t[(i + s3) % BC]        & 0xFF] ^  tt       ) & 0xFF)
-        return bytearray(result)
+        return ''.join(map(chr, result)).encode('ASCII')
 
 def encrypt(key, block):
     return rijndael(key, len(block)).encrypt(block)
 
 def decrypt(key, block):
     return rijndael(key, len(block)).decrypt(block)
+
+def test():
+    def t(kl, bl):
+        b = 'b' * bl
+        r = rijndael('a' * kl, bl)
+        assert r.decrypt(r.encrypt(b)) == b
+    t(16, 16)
+    t(16, 24)
+    t(16, 32)
+    t(24, 16)
+    t(24, 24)
+    t(24, 32)
+    t(32, 16)
+    t(32, 24)
+    t(32, 32)

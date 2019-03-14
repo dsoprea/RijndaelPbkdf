@@ -1,18 +1,19 @@
-import os.path
+import os
 import setuptools
 
 import pprp
 
-app_path = os.path.dirname(pprp.__file__)
+_APP_PATH = os.path.dirname(pprp.__file__)
 
-with open(os.path.join(app_path, 'resources', 'README.rst')) as f:
+with open(os.path.join(_APP_PATH, 'resources', 'README.md')) as f:
       long_description = ''.join(f)
 
-with open(os.path.join(app_path, 'resources', 'requirements.txt')) as f:
+with open(os.path.join(_APP_PATH, 'resources', 'requirements.txt')) as f:
       install_requires = list(map(lambda s: s.strip(), f))
 
-description = "A pure-Python Rijndael (AES) and PBKDF2 library. Python2.7- "\
-              "and Python3-compatible."
+description = \
+      "A pure-Python Rijndael (AES) and PBKDF2 library. Python 2.7 and " \
+      "Python3 compatible."
 
 setuptools.setup(
       name='pprp',
@@ -30,8 +31,10 @@ setuptools.setup(
       zip_safe=False,
       install_requires=install_requires,
       package_data={
-            'pprp': ['resources/README.rst',
-                     'resources/requirements.txt'],
+            'pprp': [
+                  'resources/README.md',
+                  'resources/requirements.txt'
+            ],
       },
       scripts=[
       ],

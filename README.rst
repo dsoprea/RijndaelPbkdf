@@ -1,1 +1,0 @@
-pprp/resources/README.rst
