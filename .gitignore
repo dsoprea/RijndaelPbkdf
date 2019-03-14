@@ -2,3 +2,4 @@
 /build/
 /dist/
 /pprp.egg-info/
+/.coverage
