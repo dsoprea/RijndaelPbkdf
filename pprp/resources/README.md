@@ -50,10 +50,10 @@ key = pprp.pbkdf2(passphrase, salt, key_size)
 sg = pprp.data_source_gen(data_bytes)
 
 # Feed the source into the encryptor.
-eg = pprp.rjindael_encrypt_gen(key, sg)
+eg = pprp.rijndael_encrypt_gen(key, sg)
 
 # Feed the encryptor into the decryptor.
-dg = pprp.rjindael_decrypt_gen(key, eg)
+dg = pprp.rijndael_decrypt_gen(key, eg)
 
 # Sink the output into an IO-stream.
 decrypted = pprp.decrypt_sink(dg)

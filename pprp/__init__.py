@@ -3,8 +3,8 @@ __version__ = '0.2.6'
 import pprp.adapters
 
 from pprp.adapters import \
-    rjindael_encrypt_gen, \
-    rjindael_decrypt_gen
+    rijndael_encrypt_gen, \
+    rijndael_decrypt_gen
 
 from pprp.source import \
     file_source_gen, \
@@ -22,3 +22,7 @@ import pprp.crypto
 pprp.adapters.rijndael_cls = pprp.crypto.rijndael
 
 from pprp.utility import trim_pkcs7_padding
+
+# Backwards-compatibility shims
+rjindael_encrypt_gen = rijndael_encrypt_gen
+rjindael_decrypt_gen = rijndael_decrypt_gen
