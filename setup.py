@@ -20,6 +20,7 @@ setuptools.setup(
       version=pprp.__version__,
       description=description,
       long_description=long_description,
+      long_description_content_type='text/markdown',
       classifiers=[],
       keywords='rijdael pbkdf2',
       author='Dustin Oprea',
