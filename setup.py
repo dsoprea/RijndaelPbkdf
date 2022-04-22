@@ -8,8 +8,10 @@ _APP_PATH = os.path.dirname(pprp.__file__)
 with open(os.path.join(_APP_PATH, 'resources', 'README.md')) as f:
       long_description = ''.join(f)
 
+install_requires = []
+
 with open(os.path.join(_APP_PATH, 'resources', 'requirements.txt')) as f:
-      install_requires = list(map(lambda s: s.strip(), f))
+      tests_require = list(map(lambda s: s.strip(), f))
 
 description = \
       "A pure-Python Rijndael (AES) and PBKDF2 library. Python 2.7 and " \
@@ -31,6 +33,7 @@ setuptools.setup(
       include_package_data=True,
       zip_safe=False,
       install_requires=install_requires,
+      tests_require=tests_require,
       package_data={
             'pprp': [
                   'resources/README.md',
