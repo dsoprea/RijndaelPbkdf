@@ -33,6 +33,7 @@ setuptools.setup(
       include_package_data=True,
       zip_safe=False,
       install_requires=install_requires,
+      tests_require=tests_require,
       package_data={
             'pprp': [
                   'resources/README.md',
